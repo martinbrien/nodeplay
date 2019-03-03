@@ -1,0 +1,51 @@
+---
+- hosts: localhost
+  become: true
+  vars:
+      ansible_python_interpreter: /usr/bin/python2 # ansible is python2 but arch has no python2 on install
+  tasks:
+    - import_tasks: ./auth.yml         
+  
+    - name: packages # key packages needed to get going 
+      package: name={{item}} state=present
+      with_items:
+           - base-devel # mkpkg requirement 
+           - jq # for parsing linode api result
+           - sshpass # i think this needed got become:true
+           - python2-pip  # pip2 needed to install linode-pyhton module
+
+    - pip: name=linode-python executable=/usr/bin/pip2  # linode-python module required (replace with api?)
+
+    - import_tasks: ./cleanslate.yml    
+
+
+- hosts: "{{hostname}}"
+  remote_user: root
+  vars:
+      password: 5HyYZiO07N3zE
+#      password: $(openssl passwd -1 02ebrienm)
+  tasks:
+    - import_tasks: ./newuser.yml    # create non-privilged user 
+    - import_tasks: ./packages.yml   # install core AUR packages
+
+- hosts: "{{hostname}}"
+  remote_user: "{{username}}"
+  tasks:
+    - import_tasks: ./trizen.yml     # install trizen from github and build locally (requires mkpkg module)
+    - import_tasks: ./tarsnap.yml    # extact latest tarsnap archive
+    - import_tasks: ./dotfiles.yml   # set up config files
+
+    - name: start services           # start services
+      shell: systemctl enable --now {{ item }}
+      with_items:
+         - cronie
+         - swapspace
+         - nginx
+      become: true
+
+    - name: Create tarsnap cronjob   #
+      cron: 
+        special_time="hourly" 
+        name="tarsnapper" 
+        job="tarsnapper -c tarsnapper.conf make"
+

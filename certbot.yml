@@ -1,0 +1,5 @@
+---
+- hosts: mbrien
+  remote_user: martin
+  tasks:
+    - shell: certbot --authenticator standalone --installer nginx -d www.mbrien.net --email martin@martinbrien.com --agree-tos -n --redirect

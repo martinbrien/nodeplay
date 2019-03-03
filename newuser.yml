@@ -1,0 +1,14 @@
+- name: sudoers permissions 
+  file: path=/etc/sudoers mode=0700
+
+- name: add wheel ALL=(ALL) NOPASSWD ALL to /etc/sudoers
+  lineinfile: "dest=/etc/sudoers state=present regexp='^%wheel' line='%wheel ALL=(ALL) NOPASSWD: ALL'"
+ 
+- name: make new user
+  action: user name={{username}} password={{password}} update_password=always group=users groups=wheel shell=/bin/bash home=/home/{{username}}
+
+- name: relax permmisons for user 
+  file: path=/home/{{username}} mode=0755 owner={{username}} group=users recurse=yes
+
+- file: path=/home/{{username}} owner={{username}} group=users state=directory
+

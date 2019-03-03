@@ -1,0 +1,28 @@
+- name: upgrade packages
+  pacman: upgrade=yes update_cache=yes
+
+- name: core packages
+  package: name={{item}} state=present
+  with_items:
+       - cmake
+       - r
+       - pkg-config
+       - yajl
+       - base-devel
+       - gcc-fortran
+       - python-pip
+       - git
+       - ruby
+   
+- file: path='~/.R/libs' state=directory
+
+- name: install r packages
+  command: R -e "install.packages('{{item}}', repos='https://cloud.r-project.org/')"
+  with_items: 
+     - pacman
+
+- name: pip packages
+  shell: pip install {{item}}
+  with_items:
+       - pyvirtualdisplay
+  become: true 

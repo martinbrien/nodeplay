@@ -1,0 +1,45 @@
+- name: Download tarsnap.key
+  get_url:
+    url: https://8n1.org/raw/14617/98ee
+    dest: /home/{{username}}/tarsnap.key
+ 
+- name: tarsnap cache
+  command: tarsnap --keyfile=tarsnap.key --cachedir=/home/{{username}}/cachedir --fsck
+
+- name: create .tarsnaprc
+  file: path=/home/{{username}}/.tarsnaprc state=touch 
+
+- name: add tarsnaprc keys
+  blockinfile:
+    dest: ~/.tarsnaprc
+    block: |
+      keyfile ~/tarsnap.key
+      cachedir ~/cachedir
+
+- name: make archive
+  file: path=/home/{{username}}/{{archive}} state=directory
+
+- name: extract archive
+  shell: tarsnap --strip-components=3 -f $(tarsnap --list-archives | sort -t- -k2 -k3 -k4 | tail -1) -x
+  args:
+     chdir: /home/{{username}}/{{archive}}
+
+- name: create tarsnapper.conf
+  file: path=/home/{{username}}/tarsnapper.conf state=touch 
+
+- name: add info to tarsnapper.conf 
+  blockinfile:
+    dest: /home/{{username}}/tarsnapper.conf
+    block: |
+      deltas: 1d 7d 30d
+      target: $name-$date
+      jobs:
+        {{archive}}:
+          source: /home/{{username}}/{{archive}}
+          dateformat: '%Y-%m-%d-%H-%M'
+
+- name: Create tarsnap cronjob   
+  cron: 
+    special_time="hourly" 
+    name="tarsnapper" 
+    job="tarsnapper -c tarsnapper.conf make"

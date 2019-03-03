@@ -1,0 +1,37 @@
+- name: git clone trizen
+  shell: git clone https://aur.archlinux.org/trizen.git 
+  args:
+    chdir: /home/{{username}}
+ 
+- name: make trizen
+  shell: makepkg --noconfirm -si
+  args:
+    chdir: /home/{{username}}/trizen
+
+- name: delete trizen
+  file:
+    state: absent
+    path: /home/{{username}}/trizen
+
+
+- name: aur packages
+  shell: trizen -S --noconfirm {{item}}
+  with_items:
+         - ranger
+         - wget
+         - tree
+         - tarsnap
+         - certbot-nginx
+         - jq
+         - httpie
+         - xorg-server-xvfb
+         - firefox
+         - geckodriver
+         - python-pip
+         - python-selenium
+         - python-termcolor
+         - swapspace
+         - tarsnapper
+         - ncdu
+         - nginx
+         - cronie
