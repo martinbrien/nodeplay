@@ -11,7 +11,7 @@
   file: src='~/tarsnap/dotfiles/.muttrc' dest='~/.muttrc' state=link
 
 - name: bashrc 
-  file: src='~/tarsnap/dotfiles/.bashrc' dest='~/.bashrc'
+  file: src='~/tarsnap/dotfiles/.bashrc' dest='~/.bashrc' state=link
 
 - name: make .vim
   file: path='~/.vim/colors' state=directory recurse=yes

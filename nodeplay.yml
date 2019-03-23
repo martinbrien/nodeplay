@@ -16,7 +16,7 @@
 
     - pip: name=linode-python executable=/usr/bin/pip2  # linode-python module required (replace with api?)
 
-    - import_tasks: ./cleanslate.yml    
+    - import_tasks: ./tasks/cleanslate.yml    
 
 
 - hosts: "{{hostname}}"
@@ -25,15 +25,18 @@
       password: 5HyYZiO07N3zE
 #      password: $(openssl passwd -1 02ebrienm)
   tasks:
-    - import_tasks: ./newuser.yml    # create non-privilged user 
-    - import_tasks: ./packages.yml   # install core AUR packages
+    - import_tasks: ./tasks/newuser.yml    # create non-privilged user 
+    - import_tasks: ./tasks/packages.yml   # install core AUR packages
 
 - hosts: "{{hostname}}"
   remote_user: "{{username}}"
   tasks:
-    - import_tasks: ./trizen.yml     # install trizen from github and build locally (requires mkpkg module)
-    - import_tasks: ./tarsnap.yml    # extact latest tarsnap archive
-    - import_tasks: ./dotfiles.yml   # set up config files
+    - import_tasks: ./tasks/trizen.yml     # install trizen from github and build locally (requires mkpkg module)
+    - import_tasks: ./tasks/tarsnap.yml    # extact latest tarsnap archive
+    - import_tasks: ./tasks/dotfiles.yml   # set up config files
+    - import_tasks: ./tasks/shinyunits.yml # creates service units for shiny apps
+      tags: 
+        - shiny
 
     - name: start services           # start services
       shell: systemctl enable --now {{ item }}
@@ -42,6 +45,8 @@
          - swapspace
          - nginx
       become: true
+      
+    - import_tasks: ./tasks/shinyunits.yml # creates service units for shiny apps
 
     - name: Create tarsnap cronjob   #
       cron: 

@@ -1,0 +1,11 @@
+- name: Shiny service unit file
+  file: src='/home/martin/tarsnap/dotfiles/shiny@.service' dest='/usr/lib/systemd/system/shiny@.service' state=link
+  become: true 
+
+- name: start services           # start services
+  shell: systemctl enable --now shiny@"{{item}}".service
+  with_items:
+     - app01
+     - app02
+     - app03
+  become: true
