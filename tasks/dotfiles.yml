@@ -1,5 +1,11 @@
-- name: R config
-  file: src='~/tarsnap/dotfiles/.Rprofile' dest='~/.Rprofile' state=link
+- name: Ansible delete file example
+  file: path='/home/martin/.bashrc' state=absent
+
+  #- name: make .vim
+  #  file: path='~/.R' state=directory 
+
+  #- name: R config
+  #  file: src='~/tarsnap/dotfiles/.Rprofile' dest='~/.Rprofile' state=link
 
 - name: make directory for ranger config
   file: path='~/.config/ranger' state=directory recurse=yes 

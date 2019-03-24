@@ -9,3 +9,12 @@
      - app02
      - app03
   become: true
+
+- name: start services           # start services
+  shell: systemctl restart shiny@"{{item}}".service
+  with_items:
+     - app01
+     - app02
+     - app03
+  become: true
+
