@@ -45,18 +45,43 @@
 - name: wait for linode to come online after initial creation
   local_action: wait_for host="{{hostname}}" port=22 delay=10 timeout=3600 state=started 
 
-- name: get dns
+- name: get namesilo id for dns record
   uri:
-    url: https://www.namesilo.com/api/dnsListRecords?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=mbrien.net
+    url: > 
+      https://www.namesilo.com/api/
+      dnsListRecords?version=1&
+      type=xml&
+      key=dfd20803f76a4f1f9b39ed&
+      domain=mbrien.net
     return_content: yes
   register: result
 
 - debug: msg="{{result.content[185:217]}}" 
 
-- name: Queue isdcsbuild of a project in Jenkins
+- name: change dns record for mbrien.new
   uri:
-    url: https://www.namesilo.com/api/dnsUpdateRecord?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=mbrien.net&rrid={{result.content[185:217]}}&rrhost=www&rrvalue={{NEW_IP.stdout}}
+    url: > 
+      https://www.namesilo.com/api/
+      dnsUpdateRecord?version=1&
+      type=xml&
+      key=dfd20803f76a4f1f9b39ed&
+      domain=mbrien.net&
+      rrid={{result.content[185:217]}}&
+      rrhost=www&
+      rrvalue={{NEW_IP.stdout}}
     return_content: yes
-  register: result2
-   
-- debug: msg="{{result2.content}}"      
+
+- name: change dns record for mbrien.new
+  uri:
+    url: >
+      https://www.namesilo.com/api/
+      dnsUpdateRecord?version=1&
+      type=xml&
+      key=dfd20803f76a4f1f9b39ed&
+      domain=mbrien.net&
+      rrid={{result.content[185:217]}}&
+      rrhost=git&
+      rrvalue={{NEW_IP.stdout}}
+    return_content: yes
+
+

@@ -20,6 +20,9 @@
   command: R -e "install.packages('{{item}}', repos='https://cloud.r-project.org/')"
   with_items: 
      - pacman
+     - shiny
+     - curl
+     - shinythemes
 
 - name: pip packages
   shell: pip install {{item}}

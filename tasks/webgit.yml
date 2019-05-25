@@ -1,0 +1,80 @@
+- name: create lclgit directory
+  file:
+    state: directory
+    path: /home/{{username}}/lclgit
+
+- name: create webgit directory  
+  file:
+    state: directory
+    path: /home/{{username}}/webgit 
+
+- name: get list of repos
+  command: "ls /home/martin/tarsnap/rmtgit"
+  register: repos
+  tags:
+    - webgit
+
+- name: create folders for repos in webgit
+  file:
+    state: directory
+    path: /home/{{username}}/webgit/{{item}}
+  with_items: "{{repos.stdout_lines}}"
+
+- name: git clone from rmtgit to lclgit
+  git: 
+    repo: /home/{{username}}/tarsnap/rmtgit/{{item}}
+    dest: /home/{{username}}/lclgit/{{item}}
+  with_items: "{{repos.stdout_lines}}"
+
+- name: stagit 
+  shell: stagit /home/{{username}}/lclgit/{{item}} 
+  args:
+    chdir: /home/{{username}}/webgit/{{item}}
+  with_items: "{{repos.stdout_lines}}"
+
+- name: stagit-index
+  shell: > 
+      stagit-index 
+      ~/tarsnap/rmtgit/{{repos.stdout_lines[0]}}
+      ~/tarsnap/rmtgit/{{repos.stdout_lines[1]}}
+      ~/tarsnap/rmtgit/{{repos.stdout_lines[2]}}
+      ~/tarsnap/rmtgit/{{repos.stdout_lines[3]}} 
+      ~/tarsnap/rmtgit/{{repos.stdout_lines[4]}} > index.html
+  args:
+    chdir: /home/{{username}}/webgit
+  tags:
+    - webgit
+
+- name: download css
+  file:
+    src: ~/tarsnap/dotfiles/webgit-style.css
+    dest: ~/webgit/style.css
+    state: link
+  tags:
+    - webgit
+
+- name: logo for index
+  file:
+    src: ~/tarsnap/dotfiles/webgit-logo.png
+    dest: ~/webgit/logo.png
+    state: link
+  tags:
+    - webgit
+
+- name: create css symlink for repos in webgit
+  file:
+    src: ~/tarsnap/dotfiles/webgit-style.css
+    dest: ~/webgit/{{item}}/style.css
+    state: link
+  with_items: "{{repos.stdout_lines}}"
+  tags:
+    - webgit
+
+- name: logo for webgit
+  file:
+    src: ~/tarsnap/dotfiles/webgit-logo.png
+    dest: ~/webgit/{{item}}/logo.png
+    state: link
+  with_items: "{{repos.stdout_lines}}"
+  tags:
+    - webgit

@@ -1,17 +1,21 @@
 - name: Ansible delete file example
   file: path='/home/martin/.bashrc' state=absent
 
-  #- name: make .vim
-  #  file: path='~/.R' state=directory 
+- name: make .R
+  file: path='~/.R' state=directory 
 
-  #- name: R config
-  #  file: src='~/tarsnap/dotfiles/.Rprofile' dest='~/.Rprofile' state=link
+- name: move .Rprofile to home
+  file: src='~/tarsnap/dotfiles/.Rprofile' dest='~/.Rprofile' state=link
 
 - name: make directory for ranger config
   file: path='~/.config/ranger' state=directory recurse=yes 
 
 - name: ranger config 
   file: src='~/tarsnap/dotfiles/rc.conf' dest='~/.config/ranger/rc.conf' state=link
+
+
+- name: git config
+  file: src='~/tarsnap/dotfiles/.gitconfig' dest='~/.gitconfig' state=link
 
 - name: mutt config
   file: src='~/tarsnap/dotfiles/.muttrc' dest='~/.muttrc' state=link

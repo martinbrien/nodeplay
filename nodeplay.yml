@@ -34,9 +34,11 @@
     - import_tasks: ./tasks/trizen.yml     # install trizen from github and build locally (requires mkpkg module)
     - import_tasks: ./tasks/tarsnap.yml    # extact latest tarsnap archive
     - import_tasks: ./tasks/dotfiles.yml   # set up config files
+    - import_tasks: ./tasks/webgit.yml     # stagit setup
+      #     tags:
+      #  - webgit
     - import_tasks: ./tasks/shinyunits.yml # creates service units for shiny apps
-      tags: 
-        - shiny
+      become: true
 
     - name: start services           # start services
       shell: systemctl enable --now {{ item }}
@@ -45,12 +47,14 @@
          - swapspace
          - nginx
       become: true
-      
-    - import_tasks: ./tasks/shinyunits.yml # creates service units for shiny apps
+    
+      #    - import_tasks: ./tasks/certbot.yml # certbot setup
+      #      become: true
 
     - name: Create tarsnap cronjob   #
       cron: 
         special_time="hourly" 
-        name="tarsnapper" 
-        job="tarsnapper -c tarsnapper.conf make"
+          name="tarsnapper" 
+          job="tarsnapper -c tarsnapper.conf make"
 
+ 

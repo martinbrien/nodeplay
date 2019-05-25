@@ -1,5 +1,8 @@
----
-- hosts: mbrien
-  remote_user: martin
-  tasks:
-    - shell: certbot --authenticator standalone --installer nginx -d www.mbrien.net --email martin@martinbrien.com --agree-tos -n --redirect
+- name: stop nginx 
+  shell: sudo systemctl stop nginx 
+
+- name: run certbot
+  shell: certbot --authenticator standalone --installer nginx -d www.mbrien.net --email martin@martinbrien.com --agree-tos -n --redirect
+
+- name: strat nginx
+  shell: sudo systemctl start nginx
