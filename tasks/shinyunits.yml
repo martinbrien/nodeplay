@@ -1,20 +1,21 @@
 - name: Shiny service unit file
-  file: src='/home/martin/tarsnap/dotfiles/shiny@.service' dest='/usr/lib/systemd/system/shiny@.service' state=link
+  file: src='/home/martin/tarsnap/dotfiles/{{item}}.service' dest='/usr/lib/systemd/system/{{item}}.service' state=link
+  with_items:
+       - sampleshiny
+       - wagewonk
   become: true 
 
 - name: start services           # start services
-  shell: systemctl enable --now shiny@"{{item}}".service
+  shell: systemctl enable --now "{{item}}".service
   with_items:
-     - app01
-     - app02
-     - app03
+     - sampleshiny
+     - wagewonk
   become: true
 
 - name: start services           # start services
-  shell: systemctl restart shiny@"{{item}}".service
+  shell: systemctl restart "{{item}}".service
   with_items:
-     - app01
-     - app02
-     - app03
+     - sampleshiny
+     - wagewonk
   become: true
 

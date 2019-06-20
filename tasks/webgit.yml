@@ -39,7 +39,9 @@
       ~/tarsnap/rmtgit/{{repos.stdout_lines[1]}}
       ~/tarsnap/rmtgit/{{repos.stdout_lines[2]}}
       ~/tarsnap/rmtgit/{{repos.stdout_lines[3]}} 
-      ~/tarsnap/rmtgit/{{repos.stdout_lines[4]}} > index.html
+      ~/tarsnap/rmtgit/{{repos.stdout_lines[4]}}
+      ~/tarsnap/rmtgit/{{repos.stdout_lines[5]}}
+      ~/tarsnap/rmtgit/{{repos.stdout_lines[6]}} > index.html
   args:
     chdir: /home/{{username}}/webgit
   tags:

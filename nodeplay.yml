@@ -5,6 +5,8 @@
       ansible_python_interpreter: /usr/bin/python2 # ansible is python2 but arch has no python2 on install
   tasks:
     - import_tasks: ./auth.yml         
+      tags:
+        - namesilo3
   
     - name: packages # key packages needed to get going 
       package: name={{item}} state=present
@@ -15,8 +17,11 @@
            - python2-pip  # pip2 needed to install linode-pyhton module
 
     - pip: name=linode-python executable=/usr/bin/pip2  # linode-python module required (replace with api?)
+    - pip: name=lxml executable=/usr/bin/pip2
 
     - import_tasks: ./tasks/cleanslate.yml    
+      tags:
+        - namesilo
 
 
 - hosts: "{{hostname}}"
@@ -35,8 +40,6 @@
     - import_tasks: ./tasks/tarsnap.yml    # extact latest tarsnap archive
     - import_tasks: ./tasks/dotfiles.yml   # set up config files
     - import_tasks: ./tasks/webgit.yml     # stagit setup
-      #     tags:
-      #  - webgit
     - import_tasks: ./tasks/shinyunits.yml # creates service units for shiny apps
       become: true
 
