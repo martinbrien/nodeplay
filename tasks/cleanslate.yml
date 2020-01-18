@@ -85,8 +85,15 @@
     xpath: "/namesilo/reply/resource_record[host='pwd.mbrien.net']/record_id"
   register: pwdmbrienID
 
+- name: get record_id of img sub domain
+  xml:
+    path: /home/martin/nodeplay/namesilo.xml
+    content: "text"
+    xpath: "/namesilo/reply/resource_record[host='img.mbrien.net']/record_id"
+  register: imgmbrienID
 
-- name: change dns record for www.mbrien
+
+- name: change dns record for www.mbrien.net
   uri:
     url: https://www.namesilo.com/api/dnsUpdateRecord?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=mbrien.net&rrid={{wwwmbrienID.matches[0].record_id}}&rrhost=www&rrvalue={{NEW_IP.stdout}}
     return_content: yes
@@ -95,20 +102,26 @@
 - debug: msg="{{response.content}}" 
 
 
-- name: change dns record for www.mbrien
+- name: change dns record for pwd.mbrien.net
   uri:
     url: https://www.namesilo.com/api/dnsUpdateRecord?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=mbrien.net&rrid={{pwdmbrienID.matches[0].record_id}}&rrhost=pwd&rrvalue={{NEW_IP.stdout}}
     return_content: yes
 
-- name: change dns record for www.mbrien
+- name: change dns record for git.mbrien.net
   uri:
     url: https://www.namesilo.com/api/dnsUpdateRecord?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=mbrien.net&rrid={{gitmbrienID.matches[0].record_id}}&rrhost=git&rrvalue={{NEW_IP.stdout}}
     return_content: yes
+ 
+- name: change dns record for img.mbrien.net
+  uri:
+    url: https://www.namesilo.com/api/dnsUpdateRecord?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=mbrien.net&rrid={{imgmbrienID.matches[0].record_id}}&rrhost=git&rrvalue={{NEW_IP.stdout}}
+    return_content: yes
+
   
 
 - name: get namesilo id for wagewonk.xyz
   uri:
-    url: https://www.namesilo.com/api/dnsListRecords?version=1&type=xml&key=dfd2           0803f76a4f1f9b39ed&domain=wagewonk.xyz
+    url: https://www.namesilo.com/api/dnsListRecords?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=wagewonk.xyz
     body_format: json
     return_content: yes
   register: wagewonkIP
@@ -121,4 +134,36 @@
     content: "text"
     xpath: "/namesilo/reply/resource_record[host='www.wagewonk.xyz']/record_id"
   register: wagewonkID
+
+- name: change dns record for www.mbrien
+  uri:
+    url: https://www.namesilo.com/api/dnsUpdateRecord?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=wagewonk.xyz&rrid={{wagewonkID.matches[0].record_id}}&rrhost=www&rrvalue={{NEW_IP.stdout}}
+    return_content: yes
+  register: response2
+
+- debug: msg="{{response2.content}}" 
+
+- name: get namesilo id for sampleshiny.xyz
+  uri:
+    url: https://www.namesilo.com/api/dnsListRecords?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=sampleshiny.xyz
+    body_format: json
+    return_content: yes
+  register: wagewonkIP
+
+- copy: content="{{wagewonkIP.content}}" dest=/home/martin/nodeplay/namesilo3.xml
+
+- name: xml xyz
+  xml:
+    path: /home/martin/nodeplay/namesilo3.xml
+    content: "text"
+    xpath: "/namesilo/reply/resource_record[host='www.sampleshiny.xyz']/record_id"
+  register: wagewonkID
+
+- name: change dns record for www.mbrien
+  uri:
+    url: https://www.namesilo.com/api/dnsUpdateRecord?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=sampleshiny.xyz&rrid={{wagewonkID.matches[0].record_id}}&rrhost=www&rrvalue={{NEW_IP.stdout}}
+    return_content: yes
+  register: response2
+
+
 

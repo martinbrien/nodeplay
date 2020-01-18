@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<namesilo><request><operation>dnsListRecords</operation><ip>213.52.128.69</ip></request><reply><code>300</code><detail>success</detail><resource_record><record_id>f81bbdb904dcf0792570d13c32478323</record_id><type>A</type><host>www.wagewonk.xyz</host><value>178.79.165.32</value><ttl>7200</ttl><distance>0</distance></resource_record></reply></namesilo>

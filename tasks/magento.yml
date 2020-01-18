@@ -1,0 +1,82 @@
+- file: path=/home/http/magento state=absent
+  tags: mag
+
+- file: path=/home/http/magento state=directory
+  tags: mag
+
+- name: ensure file exists
+  copy:
+    content: |
+      {
+      }
+    dest: /home/http/composer.json 
+    force: no
+    group: http
+    owner: http
+  tags: mag
+
+- name: Magento keys
+  command: composer config http-basic.repo.magento.com 2f482c5dd6adcde8278ce0c9a4abf722 e93bd211949b444cc96ba1db9c52df47
+  args:
+    chdir: /home/http
+  tags: mag
+
+
+- name: Create the Magento project using composer
+  command: composer create-project --repository=https://repo.magento.com/ magento/project-community-edition /home/http/magento
+  args:
+    chdir: /home/http
+  tags: mag
+
+- name: Install Magento
+  shell: |
+    php /home/http/magento/bin/magento setup:install \
+    --base-url=http://shop.mbrien.net \
+    --db-host=localhost \
+    --db-name=magento \
+    --db-user=magentouser \
+    --db-password=02ebrienm \
+    --admin-firstname=Martin \
+    --admin-lastname=Brien \
+    --admin-email=martin@mbrien.net \
+    --admin-user=mbrien \
+    --admin-password=02ebrienm \
+    --language=en_US \
+    --currency=GBP \
+    --timezone=Europe/London \
+    --use-rewrites=1
+  tags: mag
+
+- name: Copy file auth.json to magento
+  copy:
+    remote_src: True
+    src: /home/http/.composer/auth.json
+    dest: /home/http/magento/auth.json
+  tags: mag
+
+    #- name: deploy sample data
+    # command: /home/http/magento/bin/magento sampledata:deploy
+  #tags: mag
+
+- name: upgarde magento
+  command: /home/http/magento/bin/magento setup:upgrade
+  #tags: mag
+
+- name: compile magento
+  command: /home/http/magento/bin/magento setup:di:compile
+  #  tags: mag
+
+- name: composer install
+  command: composer require bigbridge/product-import
+
+- name: enable php-fpm
+  shell: systemctl enable --now php-fpm
+  become: true
+
+- name: enable nginx
+  shell: systemctl enable --now nginx
+  become: true
+
+- name: change admin uri
+  command: /home/http/magento/bin/magento -n setup:config:set --backend-frontname="admin"
+

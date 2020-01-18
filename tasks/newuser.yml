@@ -12,3 +12,18 @@
 
 - file: path=/home/{{username}} owner={{username}} group=users state=directory
 
+- name: Ensure group http exists
+  group:
+    name: http
+    state: present
+
+- name: make new user
+  action: user name=http password={{password}} update_password=always group=http groups=wheel shell=/bin/bash home=/home/http
+
+- name: extend password 
+  shell: chage -m 0 -M 99999 -I -1 -E -1 http
+
+- name: relax permmisons for http
+  file: path=/home/http mode=0755 owner=http group=http recurse=yes
+
+

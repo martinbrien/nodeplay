@@ -2,7 +2,7 @@
   shell: sudo systemctl stop nginx 
 
 - name: run certbot
-  shell: certbot --authenticator standalone --installer nginx -d www.mbrien.net --email martin@martinbrien.com --agree-tos -n --redirect
+  shell: certbot --authenticator standalone --installer nginx -d shop.mbrien.net --email martin@mbrien.net --agree-tos -n --redirect
 
 - name: strat nginx
   shell: sudo systemctl start nginx

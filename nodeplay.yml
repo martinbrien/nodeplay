@@ -48,16 +48,20 @@
       with_items:
          - cronie
          - swapspace
-         - nginx
       become: true
     
-      #    - import_tasks: ./tasks/certbot.yml # certbot setup
-      #      become: true
-
     - name: Create tarsnap cronjob   #
       cron: 
         special_time="hourly" 
           name="tarsnapper" 
           job="tarsnapper -c tarsnapper.conf make"
 
- 
+- hosts: "{{hostname}}" 
+  remote_user: root
+  tasks:
+          #    - import_tasks: ./tasks/magento.yml
+          #      become: yes
+          #      become_user: http
+    - import_tasks: ./tasks/certbot.yml # certbot setup
+      become: true
+
