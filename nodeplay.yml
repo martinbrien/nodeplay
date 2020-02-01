@@ -1,12 +1,10 @@
 ---
 - hosts: localhost
   become: true
-  vars:
-      ansible_python_interpreter: /usr/bin/python2 # ansible is python2 but arch has no python2 on install
+  #  vars:
+  #    ansible_python_interpreter: /usr/bin/python2 # ansible is python2 but arch has no python2 on install
   tasks:
     - import_tasks: ./auth.yml         
-      tags:
-        - namesilo3
   
     - name: packages # key packages needed to get going 
       package: name={{item}} state=present
@@ -20,15 +18,12 @@
     - pip: name=lxml executable=/usr/bin/pip2
 
     - import_tasks: ./tasks/cleanslate.yml    
-      tags:
-        - namesilo
-
 
 - hosts: "{{hostname}}"
   remote_user: root
   vars:
       password: 5HyYZiO07N3zE
-#      password: $(openssl passwd -1 02ebrienm)
+#      password: $(openssl passwd -1 02eb!!!!m)
   tasks:
     - import_tasks: ./tasks/newuser.yml    # create non-privilged user 
     - import_tasks: ./tasks/packages.yml   # install core AUR packages
@@ -56,12 +51,12 @@
           name="tarsnapper" 
           job="tarsnapper -c tarsnapper.conf make"
 
-- hosts: "{{hostname}}" 
-  remote_user: root
-  tasks:
+          #- hosts: "{{hostname}}" 
+          #  remote_user: root
+          # tasks:
           #    - import_tasks: ./tasks/magento.yml
           #      become: yes
           #      become_user: http
-    - import_tasks: ./tasks/certbot.yml # certbot setup
-      become: true
+          #    - import_tasks: ./tasks/certbot.yml # certbot setup
+          #  become: true
 

@@ -24,22 +24,22 @@
   args:
      chdir: /home/{{username}}/{{archive}}
 
-- name: create tarsnapper.conf
-  file: path=/home/{{username}}/tarsnapper.conf state=touch 
+     #- name: create tarsnapper.conf
+     #  file: path=/home/{{username}}/tarsnapper.conf state=touch 
 
-- name: add info to tarsnapper.conf 
-  blockinfile:
-    dest: /home/{{username}}/tarsnapper.conf
-    block: |
-      deltas: 1d 7d 30d
-      target: $name-$date
-      jobs:
-        {{archive}}:
-          source: /home/{{username}}/{{archive}}
-          dateformat: '%Y-%m-%d-%H-%M'
+     #- name: add info to tarsnapper.conf 
+     #blockinfile:
+     #dest: /home/{{username}}/tarsnapper.conf
+     # block: |
+     # deltas: 1d 7d 30d
+     # target: $name-$date
+     # jobs:
+     #   {{archive}}:
+     #     source: /home/{{username}}/{{archive}}
+     #     dateformat: '%Y-%m-%d-%H-%M'
 
-- name: Create tarsnap cronjob   
-  cron: 
-    special_time="hourly" 
-    name="tarsnapper" 
-    job="tarsnapper -c tarsnapper.conf make"
+     #- name: Create tarsnap cronjob   
+     # cron: 
+     #special_time="hourly" 
+    #name="tarsnapper" 
+    # job="tarsnapper -c tarsnapper.conf make"

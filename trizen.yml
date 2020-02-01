@@ -13,7 +13,6 @@
     state: absent
     path: /home/{{username}}/trizen
 
-
 - name: aur packages
   shell: trizen -S --noconfirm {{item}}
   with_items:
