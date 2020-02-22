@@ -2,47 +2,34 @@
   file: path='/home/martin/.bashrc' state=absent
 
 - name: make new directories for dotfiles
-  file: path='~/{{item}}' state=directory 
+  file: path='{{item}}' state=directory recurse=yes owner=martin group=users 
   with_items:
-       - .R
-       - .vim/colors
-       - .config/ranger
+       - /home/martin/.R
+       - /home/martin/.vim/colors
+       - /home/martin/.config/ranger
 
 - name: symlink dotfiles to home location
-  file: src='~/tarsnap/dotfiles/{{item.file}}' dest='{{item.directory}}/{{item.file}}' state=link
+  file: src="/home/martin/tarsnap/dotfiles/{{item.file}}" dest="{{item.directory}}/{{item.file}}" state=link owner=martin group=users 
   with_items:
-       - {file:.Rprofile, directory: ~}
-       - {file:.gitconfig, directory: ~}
-       - {file:.muttrc, directory: ~}
-       - {file:.bashrc, directory: ~}
-       - {file:.vimrc, directory: ~}
-       - {file:tarsnapper.conf, directory: ~}
-       - {file:rc.conf, directory: ~/config/ranger}
-       - {file:badwolf.vim, directory:~/.vim/colors}
-       - {file:nginx.conf, directory:/etc/nginx}
-  become: true
+       - {file: .Rprofile, directory: /home/martin}
+       - {file: .gitconfig, directory: /home/martin}
+       - {file: .muttrc, directory: /home/martin}
+       - {file: .bashrc, directory: /home/martin}
+       - {file: .vimrc, directory: /home/martin}
+       - {file: tarsnapper.conf, directory: /home/martin}
+       - {file: rc.conf, directory: /home/martin/.config/ranger}
+       - {file: badwolf.vim, directory: /home/martin/.vim/colors}
 
-  #- name: make directory for ranger config
-  # file: path='~/.config/ranger' state=directory recurse=yes 
+      #- name: change
+      #  file:
+      #    path: /etc/nginx/nginx.conf
+      #    mode: 0777
+      #  become: true
+      #  tags:
+      #    - dotfiles2
 
-  #-name: ranger config 
-  #file: src='~/tarsnap/dotfiles/rc.conf' dest='~/.config/ranger/rc.conf' state=link
-
-  #- name: make .vim
-  # file: path='~/.vim/colors' state=directory recurse=yes
-
-  #- name: Download badwolf.vim
-  # get_url:
-  #  url: https://raw.githubusercontent.com/sjl/badwolf/master/colors/badwolf.vim
-  #  dest: ~/.vim/colors/badwolf.vim
-  #  mode: 0440
- 
-- name: change
-  file:
-    path: /etc/nginx/nginx.conf
-    mode: 0777
-   become: true
-
-  #- name: nginx config
-  #copy: src='/home/martin/tarsnap/dotfiles/nginx.conf' dest='/etc/nginx/nginx.conf' remote_src=yes  
-  #become: true
+      #- name: nginx config
+      #  copy: src='/home/martin/tarsnap/dotfiles/nginx.conf' dest='/etc/nginx/nginx.conf' remote_src=yes  
+      #  become: true
+      #  tags:
+      #    - dotfiles2

@@ -1,5 +1,5 @@
 - name: upgrade packages
-  pacman: upgrade=yes update_cache=yes
+  apt: upgrade=yes update_cache=yes
 
   #- name: remove php
   #  package: name=php state=absent 
@@ -8,15 +8,16 @@
   package: name={{item}} state=present
   with_items:
        - cmake
-       - r
+       - r-base
        - pkg-config
-       - yajl
-       - base-devel
-       - gcc-fortran
+         #       - yajl
+         #       - base-devel
+         #       - gcc-fortran
        - python-pip
        - git
        - ruby
-       - mariadb
+         #       - mariadb
+       - nginx
    
          #- name: AUR url
          #  command: pacman --noconfirm -U {{item}}
@@ -28,8 +29,8 @@
          #       - https://archive.archlinux.org/packages/p/php-fpm/php-fpm-7.3.1-1-x86_64.pkg.tar.xz
          #  tags: aur
 
-- name: line
-  command: ln -s /usr/lib/libreadline.so.8 /usr/lib/libreadline.so.7 
+         #- name: line
+         #  command: ln -s /usr/lib/libreadline.so.8 /usr/lib/libreadline.so.7 
 
   #- name: install composer
   #  package: name=composer state=present 

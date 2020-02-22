@@ -1,0 +1,12 @@
+- file: path='~/.R/libs' state=directory
+
+- name: install r packages
+  command: R -e "install.packages('{{item}}', repos='https://cloud.r-project.org/')"
+  with_items: 
+     - pacman
+     - shiny
+     - curl
+     - shinythemes
+
+
+

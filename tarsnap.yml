@@ -1,8 +1,6 @@
-- name: Download tarsnap.key
-  get_url:
-    url: https://8n1.org/raw/14617/98ee
-    dest: /home/{{username}}/tarsnap.key
- 
+- name: create cache directory
+  file: path=/home/{{username}}/cachedir state=directory
+
 - name: tarsnap cache
   command: tarsnap --keyfile=tarsnap.key --cachedir=/home/{{username}}/cachedir --fsck
 

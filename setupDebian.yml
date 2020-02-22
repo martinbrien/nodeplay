@@ -1,0 +1,82 @@
+- name: make new user
+  action: user name={{username}} password={{password}} update_password=always group=users groups=sudo shell=/bin/bash home=/home/{{username}}
+
+- name: relax permmisons for user
+  file: path=/home/{{username}} mode=0755 owner={{username}} group=users recurse=yes
+
+- file: path=/home/{{username}} owner={{username}} group=users state=directory
+
+- name: upgrade packages
+  apt: upgrade=yes update_cache=yes
+
+- name: core packages
+  package: name={{item}} state=present
+  with_items:
+       - cmake
+       - r-base
+       - pkg-config
+       - python-pip
+       - git
+       - ruby
+       - nginx
+       - ranger
+       - wget
+       - tree
+       - python-certbot-nginx
+       - jq
+       - httpie
+       - xvfb
+       - firefox-esr
+         #       - firefox-geckodriver
+       - python-pip
+       - python-selenium
+       - python-termcolor
+       - swapspace
+       - ncdu
+       - udunits-bin
+       - e2fslibs-dev
+       - libssl-dev
+         #       - stagit
+
+- name: Download gecko
+  get_url: 
+    url: https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz 
+    dest: /root
+
+- name: Unarchive gecko
+  unarchive:
+    copy: no
+    dest: /usr/local/bin
+    src: /root/geckodriver-v0.26.0-linux64.tar.gz
+
+- name: Download tarsnap.key
+  get_url:
+    url: https://8n1.org/raw/14617/98ee
+    dest: /home/{{username}}/tarsnap.key
+
+- name: Download tarsnap
+  get_url:
+    url: https://www.tarsnap.com/download/tarsnap-autoconf-1.0.39.tgz
+    dest: /home/martin
+
+- name: Unpacking tarsnap
+  unarchive:
+    copy: no
+    dest: /home/martin
+    src: /home/martin/tarsnap-autoconf-1.0.39.tgz
+
+- name: configure tarsnap
+  command: ./configure
+  args:
+    chdir: /home/martin/tarsnap-autoconf-1.0.39
+
+- name: Build the makefile for tarsnap
+  make:
+    chdir: /home/martin/tarsnap-autoconf-1.0.39
+    target: all
+
+- name: make install
+  command: make install
+  args:
+    chdir: /home/martin/tarsnap-autoconf-1.0.39
+

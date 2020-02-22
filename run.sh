@@ -3,4 +3,4 @@ time ansible-playbook -i mbrien, \
 nodeplay.yml \
 -k \
 --extra-vars "hostname=mbrien username=martin archive=tarsnap" \
-#--tags "mag" 
+#--tags "gecko" 

@@ -1,29 +1,29 @@
-- name: sudoers permissions 
-  file: path=/etc/sudoers mode=0700
+#- name: sudoers permissions 
+  #  file: path=/etc/sudoers mode=0700
 
-- name: add wheel ALL=(ALL) NOPASSWD ALL to /etc/sudoers
-  lineinfile: "dest=/etc/sudoers state=present regexp='^%wheel' line='%wheel ALL=(ALL) NOPASSWD: ALL'"
+  #- name: add wheel ALL=(ALL) NOPASSWD ALL to /etc/sudoers
+  #  lineinfile: "dest=/etc/sudoers state=present regexp='^%wheel' line='%wheel ALL=(ALL) NOPASSWD: ALL'"
  
 - name: make new user
-  action: user name={{username}} password={{password}} update_password=always group=users groups=wheel shell=/bin/bash home=/home/{{username}}
+  action: user name={{username}} password={{password}} update_password=always group=users groups=sudo shell=/bin/bash home=/home/{{username}}
 
 - name: relax permmisons for user 
   file: path=/home/{{username}} mode=0755 owner={{username}} group=users recurse=yes
 
 - file: path=/home/{{username}} owner={{username}} group=users state=directory
 
-- name: Ensure group http exists
-  group:
-    name: http
-    state: present
+  #- name: Ensure group http exists
+  #  group:
+  #    name: http
+  #    state: present
 
-- name: make new user
-  action: user name=http password={{password}} update_password=always group=http groups=wheel shell=/bin/bash home=/home/http
+  #- name: make new user
+  #  action: user name=http password={{password}} update_password=always group=http groups=wheel shell=/bin/bash home=/home/http
 
-- name: extend password 
-  shell: chage -m 0 -M 99999 -I -1 -E -1 http
+  #- name: extend password 
+  #shell: chage -m 0 -M 99999 -I -1 -E -1 http
 
-- name: relax permmisons for http
-  file: path=/home/http mode=0755 owner=http group=http recurse=yes
+  #- name: relax permmisons for http
+  #  file: path=/home/http mode=0755 owner=http group=http recurse=yes
 
 

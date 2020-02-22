@@ -1,0 +1,55 @@
+- name: Remove existing nginx.conf
+  file: path='/etc/nginx/nginx.conf' state=absent
+  tags:
+    - nginx
+
+- name: ensure file exists
+  copy:
+    content: ""
+    dest: /etc/nginx/nginx.conf
+    force: no
+  tags:
+    - nginx
+
+- name: Create new empty nginx.conf
+  file: path='/etc/nginx/nginx.conf' state=file
+  tags:
+    - file
+
+- name: Add header to nginx.conf
+  blockinfile:
+    path: /etc/nginx/nginx.conf
+    block: |
+      events {}
+      http {
+      include       mime.types;
+      default_type  application/octet-stream;
+    marker: "# {mark} HEADER"
+
+- name: Add servers to nginx.conf
+  blockinfile:
+    path: /etc/nginx/nginx.conf
+    block: |
+      server {
+          server_name "{{item.domain}}.mbrien.net";
+          location / {root "{{item.path}}";index index.html index.htm; autoindex on;}
+      }
+    marker: "# {mark} {{ item.domain }}"
+  with_items:
+      - { domain: www, path: /home/martin}
+      - { domain: pwd, path: /home/martin/tarsnap/pwd }
+
+- name: close curly brackets
+  blockinfile:
+    path: /etc/nginx/nginx.conf
+    block: |
+      }
+    marker: "# {mark} FOOTER"
+
+    #- name: Give permissions to pid file
+    #  file:
+    #    path: /run/nginx.pid
+    #    state: touch
+    #    owner: http
+    #    group: http
+

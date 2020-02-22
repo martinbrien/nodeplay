@@ -1,0 +1,108 @@
+- name: wait for linode to come online after initial creation
+  local_action: wait_for host="{{hostname}}" port=22 delay=10 timeout=3600 state=started 
+
+- name: get namesilo api response from mbrien.net call call
+  uri:
+    url: "https://www.namesilo.com/api/dnsListRecords?version=1&\
+          type=xml&\
+          key=dfd20803f76a4f1f9b39ed&\
+          domain=mbrien.net"
+    return_content: yes
+  register: mbrienIP
+  tags:
+    - domain
+
+- name: save api response to local xml file
+  copy: content="{{mbrienIP.content}}" dest=/home/martin/nodeplay/dnsListRecords.xml
+  tags:
+    - domain
+
+- name: read all record_id numbers for all mbrien.net subdomains from local  xml file and assign to variable
+  xml: 
+    path: /home/martin/nodeplay/dnsListRecords.xml
+    content: "text"
+    xpath: "/namesilo/reply/resource_record[host='{{item}}.mbrien.net']/record_id"
+  register: "recordID"
+  with_items:
+     - www
+     - git
+     - pwd
+     - img
+  tags:
+    - domain
+
+- name: delete dnsListRecords.xml
+  file: path='/home/martin/nodeplay/dnsListRecords.xml' state=absent
+
+- name: apply new IP address to all mbrien.net subdomains
+  uri:
+    url: "https://www.namesilo.com/api/dnsUpdateRecord?version=1&\
+          type=xml&\
+          key=dfd20803f76a4f1f9b39ed&\
+          domain=mbrien.net&\
+          rrid={{item.id}}&\
+          rrhost={{item.domain}}&\
+          rrvalue={{IP}}"
+    return_content: yes
+  register: response
+  with_items:
+     - {domain: www, id: "{{recordID.results[0].matches[0].record_id}}"}
+     - {domain: git, id: "{{recordID.results[1].matches[0].record_id}}"}
+     - {domain: pwd, id: "{{recordID.results[2].matches[0].record_id}}"}
+     - {domain: img, id: "{{recordID.results[3].matches[0].record_id}}"}
+  tags:
+    - domain
+
+- debug: msg="{{response.results[0].content}}"
+  tags:
+    - domain
+
+
+       #- name: get namesilo id for wagewonk.xyz
+       #  uri:
+       #    url: https://www.namesilo.com/api/dnsListRecords?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=wagewonk.xyz
+       #    body_format: json
+       #    return_content: yes
+       #  register: wagewonkIP
+
+       #- copy: content="{{wagewonkIP.content}}" dest=/home/martin/nodeplay/namesilo2.xml
+
+       #- name: xml xyz
+       #  xml:
+       #    path: /home/martin/nodeplay/namesilo2.xml
+       #    content: "text"
+       #    xpath: "/namesilo/reply/resource_record[host='www.wagewonk.xyz']/record_id"
+       #register: wagewonkID
+
+       #- name: change dns record for www.wagewonk.xyz
+       #  uri:
+       #    url: https://www.namesilo.com/api/dnsUpdateRecord?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=wagewonk.xyz&rrid={{wagewonkID.matches[0].record_id}}&rrhost=www&rrvalue={{NEW_IP.stdout}}
+       #    return_content: yes
+       #  register: response2
+
+       #- debug: msg="{{response2.content}}" 
+
+       #- name: get namesilo id for sampleshiny.xyz
+       #  uri:
+       #    url: https://www.namesilo.com/api/dnsListRecords?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=sampleshiny.xyz
+       #    body_format: json
+       #    return_content: yes
+       #  register: wagewonkIP
+
+       #- copy: content="{{wagewonkIP.content}}" dest=/home/martin/nodeplay/namesilo3.xml
+
+       #- name: xml xyz
+       #  xml:
+       #    path: /home/martin/nodeplay/namesilo3.xml
+       #    content: "text"
+       #    xpath: "/namesilo/reply/resource_record[host='www.sampleshiny.xyz']/record_id"
+       #  register: wagewonkID
+
+       #- name: change dns record for www.sampleshiny.xyz
+       #  uri:
+       #    url: https://www.namesilo.com/api/dnsUpdateRecord?version=1&type=xml&key=dfd20803f76a4f1f9b39ed&domain=sampleshiny.xyz&rrid={{wagewonkID.matches[0].record_id}}&rrhost=www&rrvalue={{NEW_IP.stdout}}
+       #   return_content: yes
+       #  register: response2
+
+
+
